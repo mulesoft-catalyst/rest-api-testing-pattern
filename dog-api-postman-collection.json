@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "a1c2e62f-b96b-45cb-935e-9859baa7fed6",
+		"name": "Dog API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Breeds",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let body = JSON.parse(responseBody);",
+							"let breedIds = body.message;",
+							"",
+							"console.log(breedIds)",
+							"",
+							"//Set the Environment variables",
+							"pm.environment.set('breedIds', JSON.stringify(breedIds));",
+							"pm.environment.set('nextIndex', 0);",
+							"pm.environment.set('activeBreedId', breedIds[0]);",
+							"",
+							"// Test to validate the Status. ",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-v",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://dog.ceo/api/breeds/list",
+					"protocol": "https",
+					"host": [
+						"dog",
+						"ceo"
+					],
+					"path": [
+						"api",
+						"breeds",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Breed Image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let breedIds = JSON.parse(pm.environment.get('breedIds'));",
+							"",
+							"// Increment the next Index",
+							"let nextIndex = parseInt(pm.environment.get('nextIndex')) + 1;",
+							"",
+							"",
+							"// In case comments have been fetched for all requests then we're done here",
+							"// time to end the collection run and clean up the environment and activeBreedId",
+							"if (breedIds.length === nextIndex) {",
+							"    pm.environment.set('nextIndex', 0);",
+							"    pm.environment.set('activeBreedId', breedIds[0]);",
+							"    postman.setNextRequest(null);",
+							"}",
+							"else {    ",
+							"    pm.environment.set('nextIndex', nextIndex);",
+							"    pm.environment.set('activeBreedId', breedIds[nextIndex]);",
+							"    // Now run the get breed image  details again to get the details",
+							"    // for the next request",
+							"    postman.setNextRequest(\"Get Breed Image\");",
+							"}",
+							"",
+							"",
+							"// Perform the comments counting logic down after this:",
+							"// ---------------------------------------------------",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-v",
+						"value": "3",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://dog.ceo/api/breed/{{activeBreedId}}/images/random",
+					"protocol": "https",
+					"host": [
+						"dog",
+						"ceo"
+					],
+					"path": [
+						"api",
+						"breed",
+						"{{activeBreedId}}",
+						"images",
+						"random"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

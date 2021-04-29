@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "3d990fc8-9ea3-498e-820a-2cfc9af571ad",
+		"name": "Cat API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all Tags",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let body = JSON.parse(responseBody);",
+							"let tagIds = body;",
+							"",
+							"console.log(tagIds)",
+							"",
+							"//Set the Environment variables",
+							"pm.environment.set('tagIds', JSON.stringify(tagIds));",
+							"pm.environment.set('nextIndex', 0);",
+							"pm.environment.set('activeTagId', tagIds[0]);",
+							"",
+							"// Test to validate the Status. ",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://cataas.com/api/tags",
+					"protocol": "https",
+					"host": [
+						"cataas",
+						"com"
+					],
+					"path": [
+						"api",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Cats with a Tag",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let tagIds = JSON.parse(pm.environment.get('tagIds'));",
+							"",
+							"// Increment the next Index",
+							"let nextIndex = parseInt(pm.environment.get('nextIndex')) + 1;",
+							"",
+							"",
+							"// In case comments have been fetched for all requests then we're done here",
+							"// time to end the collection run and clean up the environment and activeTagId",
+							"if (tagIds.length === nextIndex) {",
+							"    pm.environment.set('nextIndex', 0);",
+							"    pm.environment.set('activeTagId', tagIds[0]);",
+							"    postman.setNextRequest(null);",
+							"}",
+							"else {    ",
+							"    pm.environment.set('nextIndex', nextIndex);",
+							"    pm.environment.set('activeTagId', tagIds[nextIndex]);",
+							"    // Now run the get all cats with a tag  again to get the details",
+							"    // for the next request",
+							"    postman.setNextRequest(\"Get all Cats with a Tag\");",
+							"}",
+							"",
+							"",
+							"// Perform the comments counting logic down after this:",
+							"// ---------------------------------------------------",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://cataas.com/api/cats?tags={{activeTagId}}",
+					"protocol": "https",
+					"host": [
+						"cataas",
+						"com"
+					],
+					"path": [
+						"api",
+						"cats"
+					],
+					"query": [
+						{
+							"key": "tags",
+							"value": "{{activeTagId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
